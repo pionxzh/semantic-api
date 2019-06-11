@@ -1,4 +1,5 @@
 # Semantic Api
+[![Coverage Status](https://coveralls.io/repos/github/pionxzh/SemanticApi/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/SemanticApi?branch=master)
 
 🎏 A Javascript module for better API url readability.
 
@@ -18,7 +19,7 @@
 
 Still remember how you hard-code url or config the API link in `config.json` ?
 
-SemanticApi allows you to declare and use the api with chaining-function-call way.
+SemanticApi provides a better way to declare and use the api with chaining-function-call.
 
 ```js
 Manager.api.admin.user.id(123).edit.get()
@@ -27,7 +28,7 @@ Manager.api.admin.user.id(123).edit.get()
 
 ## Install
 
-### Node
+### Node.js
 * `Node.js` >= 8.0
 
 ```bash
@@ -61,39 +62,25 @@ API.spotify.music.category(7).filter.query({ premium: true })
 // => https://api.spotify.com/music/category/7/filter?premium=true
 ```
 
-You can also build the API without baseUrl but it's **NOT RECOMMENDED**. This is god damn weird lol.
-
-```js
-class Manager {
-    static get API () {
-        return new SemanticApi()
-    }
-}
-
-const options = { keyword: 'blog', page: 2, sort: 'desc' }
-console.log(Manager.API.https().www.dot().facebook.dot().com.pages.search.query(options))
-// => https://www.facebook.com/pages/search?keyword=blog&page=2&sort=desc
-```
-
 ## Usage
 
 ### Bind function
 
-You can bind the function like `fetch` to perform more action within SemanticApi. Overriding function is available in this way too.
+You can bind the function like `fetch` to perform more action within SemanticApi.
 
 ```js
 import SemanticApi from 'semantic-api'
 
-const customFn = {
-    get: function (method, data, args, url) { ... },
-    post: function (method, data, args, url) {
-        return fetch(url, data, { method: 'post', ... })
-    }
-}
-
 class Instgram {
     static get api () {
-        return new SemanticApi('https://api.instagram.com/', customFn)
+        const baseUrl = 'https://api.instagram.com/'
+        const customFn = {
+            get: function (method, data, args, url) { ... },
+            post: function (method, data, args, url) {
+                return fetch(url, data, { method: 'post', ... })
+            }
+        }
+        return new SemanticApi(baseUrl, customFn)
     }
 
     static login (data) {
@@ -107,24 +94,13 @@ Instgram.login()
 ```
 
 ## API
-Below is the api available to use in customMethod like the example in [Usage](#usage).
 
-`function (method, data, args, url) { ... }`
-* `method` is the methodName being called.
-* `data` is the data in `.methodName(data, ...args)`
-* `args` is the data in `.methodName(data, ...args)`
-* `url` is the url or string of current result.
+new SemanticApi(**baseUrl**, **customMethods**)
 
-### Methods
-
-* `this.calls`
-  * The list store all the property access and method call.
-* `this.push(item, ...args)`
-  * Push item into the call list.
-* `this.pop()`
-  * Pop item from the call list.
-* `this.bonding(bondingStr)`
-  * Bond previous and next item with the `bondingStr` without delimiter `"/"`.
+| Options         | Type      | Description                                                    |
+| --------------- | --------- | -------------------------------------------------------------- |
+| baseUrl         | `string`  | Base url. Default: `""`                                        |
+| customMethods   | `object`  | Object of custom functions that want to be injected in.        |
 
 ## Credits
 

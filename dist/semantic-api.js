@@ -50,10 +50,6 @@
 
       _defineProperty(this, "_proxy", void 0);
 
-      _defineProperty(this, "bondingStr", void 0);
-
-      _defineProperty(this, "waitForBonding", void 0);
-
       _defineProperty(this, "baseUrl", void 0);
 
       _defineProperty(this, "delimiter", void 0);
@@ -64,21 +60,9 @@
       this.delimiter = '/';
       this.baseUrl = baseUrl;
       this.methods = {
-        dot: function dot(method, data, args, url) {
-          data === undefined ? this.bonding('.') : this.push(method, data, ...args);
-        },
-        slash: function slash(method, data, args, url) {
-          data === undefined ? this.bonding('/') : this.push(method, data, ...args);
-        },
-        http: function http(method, data, args, url) {
-          data === undefined ? this.bonding('http://') : this.push(method, data, ...args);
-        },
-        https: function https(method, data, args, url) {
-          data === undefined ? this.bonding('https://') : this.push(method, data, ...args);
-        },
         query: function query(method, data, args, url) {
           if (data === undefined) {
-            this.push(method, data, ...args);
+            this.push(method);
           } else {
             const prev = this.pop();
 
@@ -113,13 +97,31 @@
       return this.methods.hasOwnProperty(methodName) && typeof this.methods[methodName] === 'function';
     }
     /**
-     * build and return the new proxy instance
+     * check is it a method that want to get our value
+     * @param {string} methodName
      */
 
 
+    _isPeekingMethod(methodName) {
+      const reflectors = ['toString', 'valueOf', 'inspect', 'constructor', Symbol.toPrimitive, Symbol.for('util.inspect.custom'), // https://github.com/targos/node/commit/cc9898bd7747d2884afe9da8fff7e954225ba347
+      Symbol.for('nodejs.util.inspect.custom')];
+      return reflectors.includes(methodName);
+    }
+    /**
+     * handler when proxy trap get triggered
+     * @param {string} property the property/method name being accessed
+     */
+
+
+    onTrapTriggered(property) {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      this.push(property, ...args);
+    }
+
     _buildProxy() {
-      // GoogleChrome/proxy-polyfill needs to ensure the property at creation time.
-      // Which is useless for our use case. And there is no other useable alternative choice.
       if (!this._isSupportProxy()) {
         throw new Error('Proxy is not supported in current environment.');
       } // Non-extensible object
@@ -128,10 +130,11 @@
       const noop = Object.seal(() => {});
       const handler = {
         get: (target, property, receiver) => {
-          const reflectors = ['toString', 'valueOf', 'inspect', 'constructor', Symbol.toPrimitive, Symbol.for('util.inspect.custom'), // https://github.com/targos/node/commit/cc9898bd7747d2884afe9da8fff7e954225ba347
-          Symbol.for('nodejs.util.inspect.custom')];
-          if (reflectors.includes(property)) return () => this.toString();
-          this.onGetProperty(property);
+          if (this._isPeekingMethod(property)) {
+            return () => this.toString();
+          }
+
+          this.onTrapTriggered(property);
           return this._proxy;
         },
         apply: (target, receiver, args) => {
@@ -139,28 +142,16 @@
 
           if (this._isMethod(methodName)) {
             const value = args.shift();
-            this.methods[methodName].call(this, methodName, value, args, this.toString());
+            let result = this.methods[methodName].call(this, methodName, value, args, this.toString());
+            if (result !== undefined) return result;
           } else {
-            this.push(methodName, ...args);
+            this.onTrapTriggered(methodName, ...args);
           }
 
           return this._proxy;
         }
       };
       return new Proxy(noop, handler);
-    }
-    /**
-     * handler when proxy trap "get" triggered
-     * @param {string} property the property name being accessed
-     */
-
-
-    onGetProperty(property) {
-      if (this.waitForBonding) {
-        this.handleBonding(property);
-      } else {
-        this.push(property);
-      }
     }
     /**
      * push item to call list
@@ -170,11 +161,11 @@
 
 
     push(item) {
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
+      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        args[_key2 - 1] = arguments[_key2];
       }
 
-      args = args.map(item => item && item.toString());
+      if (args.length) args = args.map(arg => arg.toString());
       this.calls.push(item.toString(), ...args);
     }
     /**
@@ -185,25 +176,9 @@
     pop() {
       return this.calls.pop();
     }
-    /**
-     * bonding previous and next property with bonding string
-     * @param {string} bondingStr the bonding string
-     */
-
-
-    bonding(bondingStr) {
-      this.bondingStr = bondingStr;
-      this.waitForBonding = true;
-    }
-
-    handleBonding(curr) {
-      const prev = this.pop() || '';
-      this.push(prev + this.bondingStr + curr);
-      this.waitForBonding = false;
-    }
 
     toString() {
-      return this.baseUrl + this.calls.join(this.delimiter) + (this.waitForBonding ? this.bondingStr : '');
+      return this.baseUrl + this.calls.join(this.delimiter);
     }
 
   }

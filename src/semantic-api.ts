@@ -9,8 +9,6 @@ interface customMethods {
 class SemanticApi {
     public calls: string[]
     private _proxy: any
-    private bondingStr: string
-    private waitForBonding: boolean
     protected baseUrl: string
     protected delimiter: string
     protected methods: customMethods
@@ -23,23 +21,10 @@ class SemanticApi {
         this.calls = []
         this.delimiter = '/'
         this.baseUrl = baseUrl
-
         this.methods = {
-            dot: function (method: string, data: any, args: any[], url: string) {
-                data === undefined ? this.bonding('.') : this.push(method, data, ...args)
-            },
-            slash: function (method: string, data: any, args: any[], url: string) {
-                data === undefined ? this.bonding('/') : this.push(method, data, ...args)
-            },
-            http: function (method: string, data: any, args: any[], url: string) {
-                data === undefined ? this.bonding('http://') : this.push(method, data, ...args)
-            },
-            https: function (method: string, data: any, args: any[], url: string) {
-                data === undefined ? this.bonding('https://') : this.push(method, data, ...args)
-            },
             query: function (method: string, data: any, args: any[], url: string) {
                 if (data === undefined) {
-                    this.push(method, data, ...args)
+                    this.push(method)
                 } else {
                     const prev = this.pop()
                     const queryStringify = (opts: {[prop: string]: string|number} = {}) => Object.keys(opts).map(name => `${name}=${opts[name]}`).join('&')
@@ -69,11 +54,29 @@ class SemanticApi {
     }
 
     /**
-     * build and return the new proxy instance
+     * check is it a method that want to get our value
+     * @param {string} methodName
      */
+    _isPeekingMethod (methodName: string) {
+        const reflectors = [
+            'toString', 'valueOf', 'inspect', 'constructor',
+            Symbol.toPrimitive,
+            Symbol.for('util.inspect.custom'),
+            // https://github.com/targos/node/commit/cc9898bd7747d2884afe9da8fff7e954225ba347
+            Symbol.for('nodejs.util.inspect.custom')
+        ]
+        return reflectors.includes(methodName)
+    }
+
+    /**
+     * handler when proxy trap get triggered
+     * @param {string} property the property/method name being accessed
+     */
+    onTrapTriggered (property: string, ...args: any[]) {
+        this.push(property, ...args)
+    }
+
     _buildProxy () {
-        // GoogleChrome/proxy-polyfill needs to ensure the property at creation time.
-        // Which is useless for our use case. And there is no other useable alternative choice.
         if (!this._isSupportProxy()) {
             throw new Error('Proxy is not supported in current environment.')
         }
@@ -82,16 +85,11 @@ class SemanticApi {
         const noop = Object.seal(() => {})
         const handler = {
             get: (target: any, property: string, receiver: any) => {
-                const reflectors = [
-                    'toString', 'valueOf', 'inspect', 'constructor',
-                    Symbol.toPrimitive,
-                    Symbol.for('util.inspect.custom'),
-                    // https://github.com/targos/node/commit/cc9898bd7747d2884afe9da8fff7e954225ba347
-                    Symbol.for('nodejs.util.inspect.custom')
-                ]
-                if (reflectors.includes(property)) return () => this.toString()
+                if (this._isPeekingMethod(property)) {
+                    return () => this.toString()
+                }
 
-                this.onGetProperty(property)
+                this.onTrapTriggered(property)
                 return this._proxy
             },
 
@@ -100,9 +98,10 @@ class SemanticApi {
 
                 if (this._isMethod(methodName)) {
                     const value = args.shift()
-                    this.methods[methodName].call(this, methodName, value, args, this.toString())
+                    let result = this.methods[methodName].call(this, methodName, value, args, this.toString())
+                    if (result !== undefined) return result
                 } else {
-                    this.push(methodName, ...args)
+                    this.onTrapTriggered(methodName, ...args)
                 }
 
                 return this._proxy
@@ -113,24 +112,12 @@ class SemanticApi {
     }
 
     /**
-     * handler when proxy trap "get" triggered
-     * @param {string} property the property name being accessed
-     */
-    onGetProperty (property: string) {
-        if (this.waitForBonding) {
-            this.handleBonding(property)
-        } else {
-            this.push(property)
-        }
-    }
-
-    /**
      * push item to call list
      * @param {string|number} item
      * @param args
      */
     push (item: string|number, ...args: any[]) {
-        args = args.map(item => item && item.toString())
+        if (args.length) args = args.map(arg => arg.toString())
         this.calls.push(item.toString(), ...args)
     }
 
@@ -141,24 +128,8 @@ class SemanticApi {
         return this.calls.pop()
     }
 
-    /**
-     * bonding previous and next property with bonding string
-     * @param {string} bondingStr the bonding string
-     */
-    bonding (bondingStr: string) {
-        this.bondingStr = bondingStr
-        this.waitForBonding = true
-    }
-
-    handleBonding (curr: string) {
-        const prev = this.pop() || ''
-        this.push(prev + this.bondingStr + curr)
-
-        this.waitForBonding = false
-    }
-
     toString () {
-        return this.baseUrl + this.calls.join(this.delimiter) + (this.waitForBonding ? this.bondingStr : '')
+        return this.baseUrl + this.calls.join(this.delimiter)
     }
 }
 

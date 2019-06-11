@@ -7,8 +7,6 @@ interface customMethods {
 declare class SemanticApi {
     calls: string[];
     private _proxy;
-    private bondingStr;
-    private waitForBonding;
     protected baseUrl: string;
     protected delimiter: string;
     protected methods: customMethods;
@@ -27,14 +25,16 @@ declare class SemanticApi {
      */
     _isMethod(methodName: string): boolean;
     /**
-     * build and return the new proxy instance
+     * check is it a method that want to get our value
+     * @param {string} methodName
      */
-    _buildProxy(): any;
+    _isPeekingMethod(methodName: string): boolean;
     /**
-     * handler when proxy trap "get" triggered
-     * @param {string} property the property name being accessed
+     * handler when proxy trap get triggered
+     * @param {string} property the property/method name being accessed
      */
-    onGetProperty(property: string): void;
+    onTrapTriggered(property: string, ...args: any[]): void;
+    _buildProxy(): any;
     /**
      * push item to call list
      * @param {string|number} item
@@ -45,11 +45,5 @@ declare class SemanticApi {
      * pop item from call list
      */
     pop(): string;
-    /**
-     * bonding previous and next property with bonding string
-     * @param {string} bondingStr the bonding string
-     */
-    bonding(bondingStr: string): void;
-    handleBonding(curr: string): void;
     toString(): string;
 }
