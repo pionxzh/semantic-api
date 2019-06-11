@@ -6,6 +6,6 @@ node_js :
 install:
  - npm install
 script:
- - npm test
+ - npm ci
 before_script:
  - npm run build

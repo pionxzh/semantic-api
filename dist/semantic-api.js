@@ -64,7 +64,7 @@
           if (data === undefined) {
             this.push(method);
           } else {
-            const prev = this.pop();
+            const prev = this.pop() || '';
 
             const queryStringify = function queryStringify() {
               let opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};

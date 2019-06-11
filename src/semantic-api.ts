@@ -26,7 +26,7 @@ class SemanticApi {
                 if (data === undefined) {
                     this.push(method)
                 } else {
-                    const prev = this.pop()
+                    const prev = this.pop() || ''
                     const queryStringify = (opts: {[prop: string]: string|number} = {}) => Object.keys(opts).map(name => `${name}=${opts[name]}`).join('&')
                     this.push(`${prev}?${queryStringify(data)}`)
                 }

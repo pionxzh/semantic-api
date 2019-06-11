@@ -2,13 +2,34 @@
 const expect = require('chai').expect
 const SemanticApi = require('../lib/semantic-api')
 
-describe('SemanticApi: Default', () => {
+describe('SemanticApi: Single function', () => {
     let semantic = () => new SemanticApi()
 
     it('should return empty string', () => {
         let result = semantic().toString()
         expect(result).to.equal('')
     })
+    it('should return property name', () => {
+        let result = semantic().test.toString()
+        expect(result).to.equal('test')
+    })
+    it('should return method name', () => {
+        let result = semantic().test().toString()
+        expect(result).to.equal('test')
+    })
+    it('should return "query"', () => {
+        let result = semantic().query().toString()
+        expect(result).to.equal('query')
+    })
+    it('should return queryString', () => {
+        let result = semantic().query({ number: 1, string: 'test', bool: false }).toString()
+        expect(result).to.equal('?number=1&string=test&bool=false')
+    })
+})
+
+describe('SemanticApi: Default', () => {
+    let semantic = () => new SemanticApi()
+
     it('should return property chain', () => {
         let result = semantic().api.music.info.toString()
         expect(result).to.equal('api/music/info')

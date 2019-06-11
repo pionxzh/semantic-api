@@ -1,5 +1,5 @@
 # Semantic Api
-[![Coverage Status](https://coveralls.io/repos/github/pionxzh/SemanticApi/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/SemanticApi?branch=master)
+[![Build Status](https://travis-ci.org/pionxzh/SemanticApi.svg?branch=master)](https://travis-ci.org/pionxzh/SemanticApi) [![Coverage Status](https://coveralls.io/repos/github/pionxzh/SemanticApi/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/SemanticApi?branch=master)
 
 🎏 A Javascript module for better API url readability.
 
@@ -97,10 +97,10 @@ Instgram.login()
 
 new SemanticApi(**baseUrl**, **customMethods**)
 
-| Options         | Type      | Description                                                    |
-| --------------- | --------- | -------------------------------------------------------------- |
-| baseUrl         | `string`  | Base url. Default: `""`                                        |
-| customMethods   | `object`  | Object of custom functions that want to be injected in.        |
+| Options       | Type     | Description                                             |
+| ------------- | -------- | ------------------------------------------------------- |
+| baseUrl       | `string` | Base url. Default: `""`                                 |
+| customMethods | `object` | Object of custom functions that want to be injected in. |
 
 ## Credits
 
