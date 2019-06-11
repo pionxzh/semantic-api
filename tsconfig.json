@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "outDir": "lib",
+        "declaration": true,
+        "declarationDir": "types",
+        "noImplicitAny": true,
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "sourceMap": false
+    },
+    "files": [
+        "src/semantic-api.ts"
+    ]
+}
