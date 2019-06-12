@@ -9,5 +9,6 @@ before_script:
  - npm run build
 script:
  - npm ci
-
+after_success:
+ - npm run coverage
 cache: npm

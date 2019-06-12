@@ -7,6 +7,8 @@
 
 🎏 A Javascript module for better API url readability.
 
+[![NPM](https://nodei.co/npm/semantic-api.png)](https://nodei.co/npm/semantic-api/)
+
 [CanIUse]: https://caniuse.com/#search=proxy
 
 ## Table of Contents
@@ -101,10 +103,10 @@ Instgram.login()
 
 new SemanticApi(**baseUrl**, **customMethods**)
 
-| Options       | Type     | Description                                             |
-| ------------- | -------- | ------------------------------------------------------- |
-| baseUrl       | `string` | Base url. Default: `""`                                 |
-| customMethods | `object` | Object of custom functions that want to be injected in. |
+| Options       | Type     | Description                                            | Default |
+| ------------- | -------- | ------------------------------------------------------ | ------- |
+| baseUrl       | `string` | Base url                                               | `""`    |
+| customMethods | `object` | Object of custom functions that want to be injected in | {}      |
 
 ## Credits
 
