@@ -2,7 +2,7 @@
 const expect = require('chai').expect
 const SemanticApi = require('../lib/semantic-api')
 
-describe('SemanticApi: Single function', () => {
+describe('# Single function', () => {
     let semantic = () => new SemanticApi()
 
     it('should return empty string', () => {
@@ -27,7 +27,7 @@ describe('SemanticApi: Single function', () => {
     })
 })
 
-describe('SemanticApi: Default', () => {
+describe('# Without baseUrl', () => {
     let semantic = () => new SemanticApi()
 
     it('should return property chain', () => {
@@ -48,7 +48,7 @@ describe('SemanticApi: Default', () => {
     })
 })
 
-describe('SemanticApi: With baseUrl', () => {
+describe('# With baseUrl', () => {
     let semantic = () => new SemanticApi('https://example.com/')
 
     it('should return baseUrl only', () => {
@@ -70,5 +70,14 @@ describe('SemanticApi: With baseUrl', () => {
     it('should return mixed property/method chain and query with baseUrl', () => {
         let result = semantic().try(123).again.to('456').ensure().query({ test: 1, right: false }).toString()
         expect(result).to.equal('https://example.com/try/123/again/to/456/ensure?test=1&right=false')
+    })
+})
+
+describe('# Proxy not supported', () => {
+    it('should throw Error', () => {
+        let errMsg = 'Proxy is not supported in current environment.'
+        // eslint-disable-next-line no-global-assign
+        Proxy = undefined
+        expect(() => new SemanticApi()).to.throw(errMsg)
     })
 })

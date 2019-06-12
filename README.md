@@ -1,5 +1,9 @@
 # Semantic Api
-[![Build Status](https://travis-ci.org/pionxzh/SemanticApi.svg?branch=master)](https://travis-ci.org/pionxzh/SemanticApi) [![Coverage Status](https://coveralls.io/repos/github/pionxzh/SemanticApi/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/SemanticApi?branch=master)
+![npm](https://img.shields.io/npm/v/semantic-api.svg)
+[![Build Status](https://travis-ci.org/pionxzh/SemanticApi.svg?branch=master)](https://travis-ci.org/pionxzh/SemanticApi)
+[![Coverage Status](https://coveralls.io/repos/github/pionxzh/SemanticApi/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/SemanticApi?branch=master)
+![David](https://img.shields.io/david/pionxzh/semantic-api.svg?color=%23009688)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 🎏 A Javascript module for better API url readability.
 

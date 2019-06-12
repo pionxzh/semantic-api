@@ -103,7 +103,7 @@
 
 
     _isPeekingMethod(methodName) {
-      const reflectors = ['toString', 'valueOf', 'inspect', 'constructor', Symbol.toPrimitive, Symbol.for('util.inspect.custom'), // https://github.com/targos/node/commit/cc9898bd7747d2884afe9da8fff7e954225ba347
+      const reflectors = ['toString', 'valueOf', 'inspect', 'constructor', Symbol.toPrimitive, Symbol.toStringTag, Symbol.for('util.inspect.custom'), // https://github.com/targos/node/commit/cc9898bd7747d2884afe9da8fff7e954225ba347
       Symbol.for('nodejs.util.inspect.custom')];
       return reflectors.includes(methodName);
     }
