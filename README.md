@@ -26,17 +26,16 @@ Still remember how we hard-code the url or use es6 `template literal` to build t
 SemanticApi provides a powerful way to declare and interact with API url.
 
 ```js
-const baseUrl = 'https://api.spotify.com/'
-const options = { page: 2, premium: true }
-```
-```js
-const url1 = baseUrl + "v4/category/" + CATEGORY_ID + "/filter?page=" + options.page + "&premium=" + options.premium
+const baseUrl = 'https://api.example.com/'
+const options = { page: 2 }
 
-const url2 = `${baseUrl}v4/category/${CATEGORY_ID}/filter?page=${options.page}&premium=${options.premium}`
+const ex1 = baseUrl + "v4/user/" + UserID + "/filter?page=" + options.page
 
-const url3 = SemanticApi(baseUrl).v4.category(CATEGORY_ID).filter.query(options)
+const ex2 = `${baseUrl}v4/user/${UserID}/filter?page=${options.page}`
 
-// => https://api.spotify.com/v4/category/CATEGORY_ID/filter?page=2&premium=true
+const ex3 = SemanticApi(baseUrl).v4.user(UserID).filter.query(options)
+
+// => https://api.example.com/v4/user/9527/filter?page=2
 ```
 
 ## Install
@@ -104,7 +103,7 @@ class Instgram {
 
     static login () {
         const options = { client_id: 'CLIENT-ID', redirect_uri: 'REDIRECT-URI' }
-        return Instgram.api.oauth.authorize.query(query.get()
+        return Instgram.api.oauth.authorize.query(options).get()
     }
 }
 
@@ -130,7 +129,7 @@ SemanticApi().api.user(9527).test.fnName(123, '456')
 ```
 
 ```js
-{
+customMethods = {
     fnName: function (args, calls, url) {
         // args is the list of arguments. Ex: [123, '456']
         // calls is the list of access history. Ex: ['api', 'user', 9527, 'test']
@@ -148,7 +147,7 @@ SemanticApi().api.user(9527).test.fnName(123, '456')
 ### .query(data)
 
 **NOTICE**: `data` didn't support nested object.\
-You can override the function in customMethods for better functionality.
+You can override the function in `customMethods` for better functionality.
 
 ```js
 const obj = { name: 'bob', age: 16, test: true }
