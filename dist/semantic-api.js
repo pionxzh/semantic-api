@@ -37,150 +37,75 @@
     return target;
   }
 
-  class SemanticApi {
-    /**
-     * @param {string} baseUrl the baseUrl that will be added at the start of url
-     * @param {object} customMethods key-value custom method function
-     */
-    constructor() {
-      let baseUrl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      let customMethods = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  const checkProxySupport = () => {
+    if (typeof Proxy === 'function') return;
+    throw new Error('Proxy is not supported.');
+  };
 
-      _defineProperty(this, "calls", void 0);
+  const isReflectorMethod = methodName => {
+    const reflectors = ['valueOf', 'inspect', 'toString', 'constructor', Symbol.toPrimitive, Symbol.toStringTag, Symbol.for('util.inspect.custom'), Symbol.for('nodejs.util.inspect.custom')];
+    return reflectors.includes(methodName);
+  };
 
-      _defineProperty(this, "_proxy", void 0);
+  const query = (args, calls, url) => {
+    const queryString = opts => Object.keys(opts).map(key => "".concat(key, "=").concat(encodeURIComponent(opts[key]))).join('&');
 
-      _defineProperty(this, "baseUrl", void 0);
+    const data = args.shift();
+    const prev = calls.pop() || '';
+    const result = data ? "".concat(prev, "?").concat(queryString(data)) : 'query';
+    calls.push(result);
+  };
+  /**
+   * @param {string} baseUrl the baseUrl that will be added at the start of url
+   * @param {object} customFunctions key-value custom method function
+   */
 
-      _defineProperty(this, "delimiter", void 0);
 
-      _defineProperty(this, "methods", void 0);
+  function SemanticApi(baseUrl = '', customFunctions = {}) {
+    checkProxySupport();
+    let calls = [];
+    const delimiter = '/';
 
-      this.calls = [];
-      this.delimiter = '/';
-      this.baseUrl = baseUrl;
-      this.methods = {
-        query: function query(method, data, args, url) {
-          if (data === undefined) {
-            this.push(method);
-          } else {
-            const prev = this.pop() || '';
+    const toString = () => baseUrl + calls.join(delimiter); // Create proxy and declare set/apply trap
 
-            const queryStringify = function queryStringify() {
-              let opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-              return Object.keys(opts).map(name => "".concat(name, "=").concat(opts[name])).join('&');
-            };
 
-            this.push("".concat(prev, "?").concat(queryStringify(data)));
-          }
-        }
+    let proxy = null;
+
+    const methodList = _objectSpread({
+      query
+    }, customFunctions);
+
+    const isMethod = name => methodList.hasOwnProperty(name) && typeof methodList[name] === 'function';
+
+    const createProxy = () => {
+      const getTrap = (target, property, receiver) => {
+        if (isReflectorMethod(property)) return () => toString();else calls.push(property);
+        return proxy;
       };
-      this.methods = _objectSpread({}, this.methods, customMethods);
-      this._proxy = this._buildProxy();
-      return this._proxy;
-    }
-    /**
-     * return is ES6-Proxy supported
-     */
 
+      const applyTrap = (target, receiver, args) => {
+        const methodName = calls.pop();
 
-    _isSupportProxy() {
-      return typeof Proxy === 'function';
-    }
-    /**
-     * check is method exist and is it a function
-     * @param {string} methodName
-     */
+        if (isMethod(methodName)) {
+          const url = toString();
+          const result = methodList[methodName].call(this, args, calls, url);
+          if (result !== undefined) return result;
+        } else {
+          calls.push(methodName, ...args);
+        }
 
-
-    _isMethod(methodName) {
-      return this.methods.hasOwnProperty(methodName) && typeof this.methods[methodName] === 'function';
-    }
-    /**
-     * check is it a method that want to get our value
-     * @param {string} methodName
-     */
-
-
-    _isPeekingMethod(methodName) {
-      const reflectors = ['toString', 'valueOf', 'inspect', 'constructor', Symbol.toPrimitive, Symbol.toStringTag, Symbol.for('util.inspect.custom'), // https://github.com/targos/node/commit/cc9898bd7747d2884afe9da8fff7e954225ba347
-      Symbol.for('nodejs.util.inspect.custom')];
-      return reflectors.includes(methodName);
-    }
-    /**
-     * handler when proxy trap get triggered
-     * @param {string} property the property/method name being accessed
-     */
-
-
-    onTrapTriggered(property) {
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      this.push(property, ...args);
-    }
-
-    _buildProxy() {
-      if (!this._isSupportProxy()) {
-        throw new Error('Proxy is not supported in current environment.');
-      } // Non-extensible object
-
+        return proxy;
+      };
 
       const noop = Object.seal(() => {});
-      const handler = {
-        get: (target, property, receiver) => {
-          if (this._isPeekingMethod(property)) {
-            return () => this.toString();
-          }
+      return new Proxy(noop, {
+        get: getTrap,
+        apply: applyTrap
+      });
+    };
 
-          this.onTrapTriggered(property);
-          return this._proxy;
-        },
-        apply: (target, receiver, args) => {
-          const methodName = this.pop();
-
-          if (this._isMethod(methodName)) {
-            const value = args.shift();
-            let result = this.methods[methodName].call(this, methodName, value, args, this.toString());
-            if (result !== undefined) return result;
-          } else {
-            this.onTrapTriggered(methodName, ...args);
-          }
-
-          return this._proxy;
-        }
-      };
-      return new Proxy(noop, handler);
-    }
-    /**
-     * push item to call list
-     * @param {string|number} item
-     * @param args
-     */
-
-
-    push(item) {
-      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        args[_key2 - 1] = arguments[_key2];
-      }
-
-      if (args.length) args = args.map(arg => arg.toString());
-      this.calls.push(item.toString(), ...args);
-    }
-    /**
-     * pop item from call list
-     */
-
-
-    pop() {
-      return this.calls.pop();
-    }
-
-    toString() {
-      return this.baseUrl + this.calls.join(this.delimiter);
-    }
-
+    proxy = createProxy();
+    return proxy;
   }
 
   module.exports = SemanticApi;

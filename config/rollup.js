@@ -7,7 +7,7 @@ const output = {
     format: 'umd'
 }
 
-const extensions = [".ts", ".js"]
+const extensions = ['.ts', '.js']
 
 const plugins = [
     resolve({

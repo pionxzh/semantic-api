@@ -1,6 +1,6 @@
 {
   "name": "semantic-api",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Create API url with powerful chainable way",
   "main": "./lib/semantic-api.js",
   "types": "./types/semantic-api.d.js",

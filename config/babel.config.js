@@ -9,19 +9,16 @@ module.exports = (api) => {
             '@babel/env',
             {
                 targets: {
-                    edge: "17",
+                    edge: "18",
                     chrome: "67",
                     firefox: "60",
-                    safari: "11.1",
+                    safari: "12",
                 }
             },
         ],
     ]
 
-    const plugins = [
-        '@babel/plugin-syntax-object-rest-spread',
-        '@babel/plugin-proposal-class-properties',
-    ]
+    const plugins = []
 
     return {
         presets,
