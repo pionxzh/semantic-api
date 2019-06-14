@@ -1,11 +1,12 @@
 # Semantic Api
 ![npm](https://img.shields.io/npm/v/semantic-api.svg)
 [![Build Status](https://travis-ci.org/pionxzh/semantic-api.svg?branch=master)](https://travis-ci.org/pionxzh/semantic-api)
-[![Coverage Status](https://coveralls.io/repos/github/pionxzh/SemanticApi/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/SemanticApi?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/pionxzh/semantic-api/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/semantic-api?branch=master)
 ![David](https://img.shields.io/david/pionxzh/semantic-api.svg?color=%23009688)
+[![Bundle](https://img.shields.io/bundlephobia/minzip/semantic-api.svg)](https://bundlephobia.com/result?p=semantic-api)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
-🎏 A 2kb module provides powerful way to declare and interact with the API url.
+🎏 A 1kb module provides powerful way to declare and interact with the API url.
 
 [CanIUse]: https://caniuse.com/#search=proxy
 
@@ -21,9 +22,9 @@
 
 ## What is Semantic Api
 
-Still remember how we hard-code the url or use es6 `template literal` to build the endpoint url ?
+Still remember how we hard-code the url or use es6 `template literal` to interpolate the variable in ?
 
-SemanticApi provides a powerful way to declare and interact with API url.
+SemanticApi provides a powerful way to declare and interact with the API Url.
 
 ```js
 const baseUrl = 'https://api.example.com/'
@@ -33,15 +34,16 @@ const ex1 = baseUrl + "v4/user/" + UserID + "/filter?page=" + options.page
 
 const ex2 = `${baseUrl}v4/user/${UserID}/filter?page=${options.page}`
 
+// ====================================================================
 const ex3 = SemanticApi(baseUrl).v4.user(UserID).filter.query(options)
-
+// ====================================================================
 // => https://api.example.com/v4/user/9527/filter?page=2
 ```
 
 ## Install
 
-SemanticApi targets `Node.js 8.0+` and the latest version of Chrome/FF/Safari(NO IE).\
-Because this module is powered by ES6 [Proxy](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Proxy) ( [Can I Use][CanIUse] ), there is no way to provide a fallback/ployfill for older browser/Node.js.
+SemanticApi targets `Node.js` `8.0+` and the latest version of Chrome/FF/Safari(NO IE).\
+This module is powered by ES6 [Proxy](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Proxy) ( [Can I Use][CanIUse] ), and there is no way to provide a fallback/ployfill for older browser/Node.js versions.
 
 ### Node.js
 * `Node.js` >= 8.0
@@ -101,14 +103,15 @@ class Instgram {
         return SemanticApi(baseUrl, customFn)
     }
 
-    static login () {
+    static login (data) {
         const options = { client_id: 'CLIENT-ID', redirect_uri: 'REDIRECT-URI' }
-        return Instgram.api.oauth.authorize.query(options).get()
+        Instgram.api.oauth.authorize.query(options).post(data)
+            .then(...)
     }
 }
 
-Instgram.login(options)
-// GET https://api.instagram.com/oauth/authorize?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI
+Instgram.login(...)
+// POST https://api.instagram.com/oauth/authorize?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI
 ```
 
 ## API
