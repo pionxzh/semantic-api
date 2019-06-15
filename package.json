@@ -1,6 +1,6 @@
 {
   "name": "semantic-api",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Create API url with powerful chainable way",
   "main": "./lib/semantic-api.js",
   "types": "./types/semantic-api.d.js",
@@ -22,7 +22,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github/pionxzh/semantic-api"
+    "url": "https://github.com/pionxzh/semantic-api"
   },
   "keywords": [
     "javascript",
@@ -31,18 +31,17 @@
     "api"
   ],
   "author": "Pionxzh <pionxzh@csie.io>",
-  "homepage": "https://github/pionxzh/semantic-api#readme",
+  "homepage": "https://github.com/pionxzh/semantic-api#readme",
   "bugs": {
-    "url": "https://github/pionxzh/semantic-api/issues"
+    "url": "https://github.com/pionxzh/semantic-api/issues"
   },
   "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",
-    "@babel/plugin-proposal-class-properties": "^7.4.4",
-    "@babel/plugin-syntax-object-rest-spread": "^7.2.0",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-typescript": "^7.3.3",
+    "@types/node": "^12.0.8",
     "@typescript-eslint/parser": "^1.10.2",
     "chai": "^4.2.0",
     "coveralls": "^3.0.4",

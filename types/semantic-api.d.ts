@@ -8,6 +8,9 @@ declare module 'semantic-api' {
     interface queryOption {
         [propName: string]: any;
     }
+    interface semanticInstance{
+        [propName:string]: any
+    }
     const checkProxySupport: () => void;
     const isReflectorMethod: (methodName: string) => boolean;
     const query: (args: any[], calls: any[], url: string) => void;
@@ -15,7 +18,7 @@ declare module 'semantic-api' {
      * @param {string} baseUrl the baseUrl that will be added at the start of url
      * @param {object} customFunctions key-value custom method function
      */
-    function SemanticApi(baseUrl?: string, customFunctions?: customMethods): Function;
+    function SemanticApi(baseUrl?: string, customFunctions?: customMethods): semanticInstance;
 
     export default SemanticApi
 }
