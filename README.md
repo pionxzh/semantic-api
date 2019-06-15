@@ -1,5 +1,5 @@
 # Semantic Api
-![npm](https://img.shields.io/npm/v/semantic-api.svg)
+[![npm](https://img.shields.io/npm/v/semantic-api.svg)](https://www.npmjs.com/package/semantic-api)
 [![Build Status](https://travis-ci.org/pionxzh/semantic-api.svg?branch=master)](https://travis-ci.org/pionxzh/semantic-api)
 [![Coverage Status](https://coveralls.io/repos/github/pionxzh/semantic-api/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/semantic-api?branch=master)
 ![David](https://img.shields.io/david/pionxzh/semantic-api.svg?color=%23009688)
@@ -33,10 +33,10 @@ const options = { page: 2 }
 const ex1 = baseUrl + "v4/user/" + UserID + "/filter?page=" + options.page
 
 const ex2 = `${baseUrl}v4/user/${UserID}/filter?page=${options.page}`
-
 // ====================================================================
 const ex3 = SemanticApi(baseUrl).v4.user(UserID).filter.query(options)
 // ====================================================================
+
 // => https://api.example.com/v4/user/9527/filter?page=2
 ```
 
@@ -67,7 +67,7 @@ console.log(SemanticApi('/').user.id(9527).profile)
 // => "/user/id/9527/profile"
 ```
 
-Of course, it's recommended to use a wrapper.
+Of course, it's recommended to use a wrapper on it.
 
 ```js
 const SemanticApi = require('semantic-api')
@@ -86,7 +86,7 @@ API.spotify.music.category(7).filter.query({ premium: true })
 
 ### Bind function
 
-You can bind the function like `fetch`, [axios](https://github.com/axios/axios) to perform more action within SemanticApi.
+You can bind the function like `fetch`, [axios](https://github.com/axios/axios) to perform more actions within SemanticApi.
 
 ```js
 import SemanticApi from 'semantic-api'
@@ -148,6 +148,7 @@ customMethods = {
 ```
 
 ### .query(data)
+Type: `object`
 
 **NOTICE**: `data` didn't support nested object.\
 You can override the function in `customMethods` for better functionality.
