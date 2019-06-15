@@ -5,7 +5,7 @@
   "main": "./lib/semantic-api.js",
   "types": "./types/semantic-api.d.js",
   "scripts": {
-    "prebuild": "tsc",
+    "tsc": "tsc",
     "build": "rollup --config config/rollup.js -m",
     "postbuild": "npm run lint:fix",
     "lint": "eslint src/**/*.ts lib/**/*.js",
