@@ -1,22 +1,17 @@
-interface customFunc {
+export interface SemanticCustomFunc {
     (args: any[], calls: any[], url: string): void
 }
 
-interface customMethods {
-    [propName:string]: customFunc
+export interface SemanticCustomMethods {
+    [propName: string]: SemanticCustomFunc
 }
 
-interface queryOption {
-    [propName:string]: any
+export interface SemanticQueryOption {
+    [propName: string]: any
 }
 
-interface semanticInstance{
-    [propName:string]: any
-}
-
-const checkProxySupport = () => {
-    if (typeof Proxy === 'function') return
-    throw new Error('Proxy is not supported.')
+export interface SemanticInstance {
+    [propName: string]: any
 }
 
 const isReflectorMethod = (methodName: string) => {
@@ -28,13 +23,13 @@ const isReflectorMethod = (methodName: string) => {
         Symbol.toPrimitive,
         Symbol.toStringTag,
         Symbol.for('util.inspect.custom'),
-        Symbol.for('nodejs.util.inspect.custom')
+        Symbol.for('nodejs.util.inspect.custom'),
     ]
     return reflectors.includes(methodName)
 }
 
-const query = (args: any[], calls: any[], url: string) => {
-    const queryString = (opts: queryOption) => Object.keys(opts).map(key => `${key}=${encodeURIComponent(opts[key])}`).join('&')
+const query = (args: any[], calls: any[]) => {
+    const queryString = (opts: SemanticQueryOption) => Object.keys(opts).map(key => `${key}=${encodeURIComponent(opts[key])}`).join('&')
     const data = args.shift()
     const prev = calls.pop() || ''
     const result = data ? `${prev}?${queryString(data)}` : 'query'
@@ -45,33 +40,32 @@ const query = (args: any[], calls: any[], url: string) => {
  * @param {string} baseUrl the baseUrl that will be added at the start of url
  * @param {object} customFunctions key-value custom method function
  */
-function SemanticApi (baseUrl: string = '', customFunctions: customMethods = {}): semanticInstance {
-    checkProxySupport()
-
-    let calls: string[] = []
+function SemanticApi(baseUrl = '', customFunctions: SemanticCustomMethods = {}): SemanticInstance {
+    const calls: string[] = []
     const delimiter = '/'
     const toString = () => baseUrl + calls.join(delimiter)
 
     // Create proxy and declare set/apply trap
-    let proxy: null|Function = null
-    const methodList: customMethods = { query, ...customFunctions }
-    const isMethod = (name: string) => methodList.hasOwnProperty(name) && typeof methodList[name] === 'function'
+    let proxy: null | Function = null
+    const methodList: SemanticCustomMethods = { query, ...customFunctions }
+    const isMethod = (name: string) => Object.prototype.hasOwnProperty.call(methodList, name) && typeof methodList[name] === 'function'
 
     const createProxy = () => {
-        const getTrap = (target: any, property: string, receiver: any) => {
+        const getTrap = (_target: any, property: string) => {
             if (isReflectorMethod(property)) return () => toString()
             else calls.push(property)
 
             return proxy
         }
 
-        const applyTrap = (target: any, receiver: any, args: any[]) => {
+        const applyTrap = (_target: any, _receiver: any, args: any[]) => {
             const methodName = calls.pop()
             if (isMethod(methodName)) {
                 const url = toString()
                 const result = methodList[methodName].call(this, args, calls, url)
                 if (result !== undefined) return result
-            } else {
+            }
+            else {
                 calls.push(methodName, ...args)
             }
 
@@ -86,4 +80,4 @@ function SemanticApi (baseUrl: string = '', customFunctions: customMethods = {})
     return proxy
 }
 
-module.exports = SemanticApi
+export default SemanticApi

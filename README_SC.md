@@ -1,8 +1,6 @@
 # Semantic Api
 [![npm](https://img.shields.io/npm/v/semantic-api.svg)](https://www.npmjs.com/package/semantic-api)
-[![Build Status](https://travis-ci.org/pionxzh/semantic-api.svg?branch=master)](https://travis-ci.org/pionxzh/semantic-api)
 [![Coverage Status](https://coveralls.io/repos/github/pionxzh/semantic-api/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/semantic-api?branch=master)
-![David](https://img.shields.io/david/pionxzh/semantic-api.svg?color=%23009688)
 [![Bundle](https://img.shields.io/bundlephobia/minzip/semantic-api.svg)](https://bundlephobia.com/result?p=semantic-api)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
@@ -62,7 +60,7 @@ npm install semantic-api --save
 ## 开始使用
 
 ```js
-const SemanticApi = require('semantic-api')
+import SemanticApi from 'semantic-api'
 
 console.log(SemanticApi().try.to.test.api)
 // => "try/to/test/api"
@@ -71,10 +69,10 @@ console.log(SemanticApi('/').user.id(9527).profile)
 // => "/user/id/9527/profile"
 ```
 
-建议在SemanticApi外多封装一层以便清晰的表达其意图。
+建议在 SemanticApi 外多封装一层以便清晰的表达其意图。
 
 ```js
-const SemanticApi = require('semantic-api')
+import SemanticApi from 'semantic-api'
 
 const API = {
     get spotify () {
@@ -95,7 +93,7 @@ API.spotify.music.category(7).filter.query({ premium: true })
 ```js
 import SemanticApi from 'semantic-api'
 
-class Instgram {
+class Instagram {
     static get api () {
         const baseUrl = 'https://api.instagram.com/'
         const customFn = {
@@ -109,12 +107,12 @@ class Instgram {
 
     static login (data) {
         const options = { client_id: 'CLIENT-ID', redirect_uri: 'REDIRECT-URI' }
-        Instgram.api.oauth.authorize.query(options).post(data)
+        Instagram.api.oauth.authorize.query(options).post(data)
             .then(...)
     }
 }
 
-Instgram.login(...)
+Instagram.login(...)
 // POST https://api.instagram.com/oauth/authorize?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI
 ```
 
@@ -161,7 +159,6 @@ customMethods = {
 const obj = { name: 'bob', age: 16, test: true }
 SemanticApi().query(obj)
 // => ?name=bob&age=16&test=true
-
 ```
 
 ## 特别感谢

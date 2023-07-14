@@ -1,8 +1,6 @@
 # Semantic Api
 [![npm](https://img.shields.io/npm/v/semantic-api.svg)](https://www.npmjs.com/package/semantic-api)
-[![Build Status](https://travis-ci.org/pionxzh/semantic-api.svg?branch=master)](https://travis-ci.org/pionxzh/semantic-api)
 [![Coverage Status](https://coveralls.io/repos/github/pionxzh/semantic-api/badge.svg?branch=master)](https://coveralls.io/github/pionxzh/semantic-api?branch=master)
-![David](https://img.shields.io/david/pionxzh/semantic-api.svg?color=%23009688)
 [![Bundle](https://img.shields.io/bundlephobia/minzip/semantic-api.svg)](https://bundlephobia.com/result?p=semantic-api)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
@@ -45,7 +43,7 @@ const ex3 = SemanticApi(baseUrl).v4.user(UserID).filter.query(options)
 ## Install
 
 SemanticApi targets `Node.js` `8.0+` and the latest version of Chrome/FF/Safari(NO IE).\
-This module is powered by ES6 [Proxy](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Proxy) ( [Can I Use][CanIUse] ), and there is no way to provide a fallback/ployfill for older browser/Node.js versions.
+This module is powered by ES6 [Proxy](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Proxy) ( [Can I Use][CanIUse] ), and there is no way to provide a fallback/polyfill for older browser/Node.js versions.
 
 ### Node.js
 * `Node.js` >= 8.0
@@ -60,7 +58,7 @@ npm install semantic-api --save
 ## Getting Started
 
 ```js
-const SemanticApi = require('semantic-api')
+import SemanticApi from 'semantic-api'
 
 console.log(SemanticApi().try.to.test.api)
 // => "try/to/test/api"
@@ -72,7 +70,7 @@ console.log(SemanticApi('/').user.id(9527).profile)
 Of course, it's recommended to use a wrapper on it.
 
 ```js
-const SemanticApi = require('semantic-api')
+import SemanticApi from 'semantic-api'
 
 const API = {
     get spotify () {
@@ -93,7 +91,7 @@ You can bind the function like `fetch`, [axios](https://github.com/axios/axios) 
 ```js
 import SemanticApi from 'semantic-api'
 
-class Instgram {
+class Instagram {
     static get api () {
         const baseUrl = 'https://api.instagram.com/'
         const customFn = {
@@ -107,12 +105,12 @@ class Instgram {
 
     static login (data) {
         const options = { client_id: 'CLIENT-ID', redirect_uri: 'REDIRECT-URI' }
-        Instgram.api.oauth.authorize.query(options).post(data)
+        Instagram.api.oauth.authorize.query(options).post(data)
             .then(...)
     }
 }
 
-Instgram.login(...)
+Instagram.login(...)
 // POST https://api.instagram.com/oauth/authorize?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI
 ```
 
@@ -159,7 +157,6 @@ You can override the function in `customMethods` for better functionality.
 const obj = { name: 'bob', age: 16, test: true }
 SemanticApi().query(obj)
 // => ?name=bob&age=16&test=true
-
 ```
 
 ## Credits
